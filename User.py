@@ -26,7 +26,7 @@ class User:
 		return self.me
 	
 	def delete(self):
-		if !self.saved:
+		if not self.saved:
 			return false
 		
 		self.deleteFromGraph() # to add more, just like in self.save
@@ -53,7 +53,7 @@ class User:
 			
 
 	def connectTo(self, uid2):
-		if !self.saved:	
+		if not self.saved:	
 			return false
 		
 		uid = int(self.uid)
@@ -68,7 +68,7 @@ class User:
 		return self.db.query(q=query) == ''
 	
 	def owns(self, fropId):
-		if !self.saved:
+		if not self.saved:
 			return false
 	
 		uid = int(self.uid)
