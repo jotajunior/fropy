@@ -25,7 +25,7 @@ Instalação:
 \# easy_install neo4jrestclient
 
 Pronto, tudo feito para rodar. Para deixar o servidor rodando:
-# python fro.py
+\# python fro.py
 
 Bem, só que até agora, estou fazendo o modelo de User ainda (e não criei o fro.py), logo, não tá rodando.
 
