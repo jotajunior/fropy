@@ -13,13 +13,16 @@ Para falar com o Neo4j, estou utilizando o neo4jrestclient.
 Instalação:
 
 1- Primeiro, instalar o Python (não vem pro default no Mac OS X)
-\\# brew install python
+
+\# brew install python
 
 2- Bottle
-\\# easy_install bottle
+
+\# easy_install bottle
 
 3- Neo4jrestclient
-\\# easy_install neo4jrestclient
+
+\# easy_install neo4jrestclient
 
 Pronto, tudo feito para rodar. Para deixar o servidor rodando:
 # python fro.py
