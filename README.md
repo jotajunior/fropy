@@ -3,9 +3,9 @@ fropy
 
 Frop Social Search em Python
 
-Bem, como o Social Search é apenas uma pequena API focada na busca, achei uma ferramenta menor e mais simples, e ainda
-será adequada. Não criei uma estrutura em diretórios (ainda), pois serão só estes arquivos. Se eu quiser aumentar
-o número de arquivos, depois eu crio.
+Bem, como o Social Search é apenas uma pequena API focada na busca, achei uma ferramenta menor e mais simples 
+a mais adequada. Não criei uma estrutura em diretórios ainda, pois serão só estes arquivos. Se eu quiser aumentar
+o número de arquivos, crio.
 
 Para REST, estou utilizando o Bottle.
 Para falar com o Neo4j, estou utilizando o neo4jrestclient.
