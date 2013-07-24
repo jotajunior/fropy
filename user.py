@@ -1,5 +1,6 @@
+import resource
 
-class User:
+class User(resource.Resource):
 
 	def __init__(self):
 		self.saved = False
@@ -52,7 +53,7 @@ class User:
 		with self.db.transaction:
 			if self.userIndex["uid"][uid].single == None:
 				userNode = self.db.nodes.create(uid=uid, points=0)
-				#self.userIndex["uid"][uid] = userNode
+				self.userIndex["uid"][uid] = userNode
 				return True
 			return True
 		
@@ -143,12 +144,13 @@ class User:
 		
 		skip = ( self.page - 1 )*self.perPage
 		
-		return self.db.query(query, uid=uid, 
-									depth=self.depth, 
-									criteria=self.criteria, 
-									skip=skip, 
-									perPage=self.perPage 
-							)["frop"]
+		return self.extractProducts( self.db.query(query, uid=uid, 
+												   depth=self.depth, 
+												   criteria=self.criteria, 
+												   skip=skip, 
+												   perPage=self.perPage 
+												  )
+									, "frop")		
 	
 	def deleteFriendships(self):
 		uid = int(self.uid)
@@ -162,12 +164,12 @@ class User:
 	def getFriends(self):
 		uid = int(self.uid)
 		
-		query = """ START me=node:uid_index(uid='{uid}')
+		query = """ START me=node:uid_index(uid='"""+str(uid)+"""')
 					MATCH me-[:FRIENDS_WITH]-friend
 					RETURN friend
 				"""
 		
-		return self.db.query(query, uid=uid)["friend"]
+		return self.extractUids(self.db.query(query), "friend")
 	
 	def getFriendCount(self):
 		uid = int(self.uid)
@@ -203,17 +205,21 @@ class User:
 					LIMIT {limit}
 				"""
 		
-		return self.db.query(query, uid=uid, uid2=uid2, limit=limit)["mutual"]
+		return self.extractUids(self.db.query(query, uid=uid, uid2=uid2, limit=limit), "mutual")
 	
-	def getProducts(self):
+	def getProducts(self, limit = 9):
 		uid = int(self.uid)
+		limit = int(limit)
 		
 		query = """ START me=node:uid_index(uid='{uid}')
 					MATCH me-[:OWNS]->frop
 					RETURN DISTINCT frop
+					LIMIT {limit}
 				"""
 		
-		return self.db.query(query, uid=uid)["frop"]
+		return self.extractProducts(self.db.query(query, uid=uid, limit=limit), "frop")
+		
+		
 		
 	def getCounter(self):
 		query = """ START me=node(*)

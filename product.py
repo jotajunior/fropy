@@ -1,6 +1,7 @@
 from cgi import escape
+import resource
 
-class Product:
+class Product(resource.Resource):
 
 	def __init__(self):
 		self.me = False
