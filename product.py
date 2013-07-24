@@ -27,6 +27,7 @@ class Product(resource.Resource):
 		userUid = int(self.userUid)
 		category = int(self.category)
 		created = escape(self.created)
+		userName = escape(self.userName)
 		
 		with self.db.transaction:
 			productNode = self.db.nodes.create(id=id,
@@ -35,7 +36,8 @@ class Product(resource.Resource):
 											   title=title,
 											   userUid=userUid,
 											   category=category,
-											   created=created
+											   created=created,
+											   userName=userName
 											   )
 
 			self.productIndex["id"][id] = productNode

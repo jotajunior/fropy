@@ -14,10 +14,10 @@ class User(resource.Resource):
 	
 	def setSearchDefaults(self):
 		self.order = "DESC"
-		self.page = 1
-		self.perPage = 20
+		self.pageFlag = 1
+		self.perPageFlag = 20
 		self.criteria = "frop.id"
-		self.depth = 2
+		self.depthFlag = 2
 
 	def save(self):
 		self.saveToGraph() 	# to add more, like saveToMongo and saveToMySQL
@@ -98,18 +98,18 @@ class User(resource.Resource):
 	
 	###### short methods for method chaining when using search() ########
 	
-	def depth(self, depth):
-		if depth in range(0, 2):
-			self.depth = int(depth)
+	def depth(self, value):
+		if value in range(0, 2):
+			self.depthFlag = int(value)
 
 		return self
 	
-	def page(self, page):
-		self.page = int(page)
+	def page(self, value):
+		self.pageFlag = int(value)
 		return self
 		
-	def perPage(self, perPage):
-		self.perPage = int(perPage)
+	def perPage(self, value):
+		self.perPageFlag = int(value)
 		return self
 	
 	def orderBy(self, criteria):
@@ -126,31 +126,24 @@ class User(resource.Resource):
 		self.order = "ASC"
 		return self
 		
-	def uid(self, uid):
-		self.uid = int(uid)
-		return self
-		
 	######### /end method-chaining methods ###########
 	
 	def search(self):
-		uid = int(self.uid)
+		uid = str(int(self.uid)) #sanitizing and turning back to str again
+		depth = str(self.depthFlag)
+		criteria = str(self.criteria)
+		perPage = str(self.perPageFlag)
+		toorder = str(self.order)
+		toskip = str( ( self.pageFlag - 1 )*self.perPageFlag )
 		
-		query = """ START me=node:uid_index(uid='{uid}')
-					MATCH me-[:FRIENDS_WITH*0..{depth}]-()-[:OWNS]->frop
+		query = """ START me=node:uid_index(uid='"""+uid+"""')
+					MATCH me-[:FRIENDS_WITH*0.."""+depth+"""]-()-[:OWNS]->frop
 					RETURN DISTINCT frop 
-					ORDER BY {criteria} {order} 
-					SKIP {skip}
-					LIMIT {perPage} """
+					ORDER BY """+criteria+""" """+toorder+""" 
+					SKIP """+toskip+"""
+					LIMIT """+perPage
 		
-		skip = ( self.page - 1 )*self.perPage
-		
-		return self.extractProducts( self.db.query(query, uid=uid, 
-												   depth=self.depth, 
-												   criteria=self.criteria, 
-												   skip=skip, 
-												   perPage=self.perPage 
-												  )
-									, "frop")		
+		return self.extractProducts(self.db.query(query), "frop")		
 	
 	def deleteFriendships(self):
 		uid = int(self.uid)
@@ -202,10 +195,10 @@ class User(resource.Resource):
 						  friend=node:uid_index(uid='{uid2}')
 					MATCH me-[:FRIENDS_WITH]-mutual-[:FRIENDS_WITH]-friend
 					RETURN DISTINCT mutual
-					LIMIT {limit}
+					LIMIT {limiter}
 				"""
 		
-		return self.extractUids(self.db.query(query, uid=uid, uid2=uid2, limit=limit), "mutual")
+		return self.extractUids(self.db.query(query, uid=uid, uid2=uid2, limiter=limit), "mutual")
 	
 	def getProducts(self, limit = 9):
 		uid = int(self.uid)
@@ -214,13 +207,11 @@ class User(resource.Resource):
 		query = """ START me=node:uid_index(uid='{uid}')
 					MATCH me-[:OWNS]->frop
 					RETURN DISTINCT frop
-					LIMIT {limit}
+					LIMIT {limiter}
 				"""
 		
-		return self.extractProducts(self.db.query(query, uid=uid, limit=limit), "frop")
-		
-		
-		
+		return self.extractProducts(self.db.query(query, uid=uid, limiter=limit), "frop")
+
 	def getCounter(self):
 		query = """ START me=node(*)
 					WHERE HAS(me.uid)

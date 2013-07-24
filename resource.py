@@ -14,13 +14,13 @@ class Resource:
 			
 			for row in products:
 				to_append = []
-				node = row["friend"]
-				to_append["id"] = int(str(node["id"]))
+				node = row[name]
+				to_append["id"] = str(node["id"])
 				to_append["cover"] = str(node["cover"])
 				to_append["title"] = str(node["title"])
-				to_append["price"] = float(str(node["price"]))
-				to_append["uid"] = int(str(node["uid"]))
-				to_append["category"] = int(str(node["category"]))
+				to_append["price"] = str(node["price"])
+				to_append["uid"] = str(node["uid"])
+				to_append["category"] = str(node["category"])
 				to_return.append(to_append)
 			
 			return to_return
