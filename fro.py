@@ -1,10 +1,12 @@
-from bottle import run, route
+#!flask/bin/python
+from flask.ext.cache import Cache
+from flask import Flask, jsonify
 from neo4j import GraphDatabase
 import user
 import product
-import json
 
 # Base Configuration #
+print "Base Config"
 global graph
 graph = None
 global userIndex
@@ -19,10 +21,10 @@ def startGraph():
 	
 	if graph == None:
 		print "Starting graph"
-		graph = GraphDatabase("/usr/local/Cellar/neo4j/")
+		graph = GraphDatabase("/usr/local/Cellar/neo4j")
 		userIndex = graph.node.indexes.get("uid_index")
 		productIndex = graph.node.indexes.get("frop_index")
-
+		
 startGraph()
 
 global u
@@ -38,40 +40,51 @@ p.userIndex = userIndex
 p.productIndex = productIndex
 
 # Routes #
+app = Flask(__name__)
+print "On Routes"
 
+#global cache
+#cache = Cache()
+#cache.init_app(app, config={'CACHE_TYPE':'memcached'})
 
-@route('/v1.1/<uid>/friends', method='GET')
+@app.route('/', methods=['GET'])
+def index():
+	return "Hello"
+
+@app.route('/v1.1/<int:uid>/friends', methods=['GET'])
 def get_friends(uid):
 	global u
 	friends = u.setup(uid).getFriends()
 
 	result = []
-	
+	return friends
 	for friend in friends:
-		result.append(friend["uid"])
+		print friend
 
-		
-	return json.dumps(result)
+	return jsonify(result)
 
-@route('/v1.1/<uid>/connectTo/<uid2>')
+@app.route('/v1.1/<int:uid>/connectTo/<int:uid2>', methods=['GET'])
 def connect_to(uid, uid2):
 	global u
 	result = u.setup(uid).connectTo(uid2)
 	return str(result)
 
-@route('/v1.1/create/<uid>')
-def create(uid):
+@app.route('/v1.1/<int:uid>/save', methods=['GET'])
+def save(uid):
 	global u
 	u.setup(uid)
+	return str(True)
 
-@route('/counter')
+@app.route('/counter', methods=['GET'])
 def counter():
 	global u
 	return str(u.getCounter())
 
-@route('/rcounter')
+@app.route('/rcounter', methods=['GET'])
 def rcounter():
 	global u
 	return str(u.getRelCounter())
+
 ## RUNNING SERVER ##
-run(host='localhost', port=8080, debug=True)
+if __name__ == '__main__':
+    app.run(debug = False)

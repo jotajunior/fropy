@@ -52,7 +52,7 @@ class User:
 		with self.db.transaction:
 			if self.userIndex["uid"][uid].single == None:
 				userNode = self.db.nodes.create(uid=uid, points=0)
-				self.userIndex["uid"][uid] = userNode
+				#self.userIndex["uid"][uid] = userNode
 				return True
 			return True
 		
@@ -74,6 +74,7 @@ class User:
 					CREATE UNIQUE me-[r:FRIENDS_WITH]-friend
 					RETURN r
 				"""
+		self.db.query(query)
 		return True
 	
 	def owns(self, fropId):
